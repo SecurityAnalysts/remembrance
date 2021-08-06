@@ -1,5 +1,6 @@
 import ctypes
 import enum
+from ctypes.wintypes import DWORD
 
 from remembrance.native import Kernel32
 from remembrance.native.exception import WinAPIException
@@ -90,6 +91,14 @@ class MemoryArea:
         """
         self.__memory.free(self.__base_address, self.__size, *args, **kwargs)
 
+    def protect(self, protection: MemoryProtection) -> MemoryProtection:
+        """
+        Change the memory area protection.
+        :param protection: the new memory area protection
+        :return: the old memory area protection
+        """
+        return self.__memory.protect(self.__base_address, self.__size, protection)
+
     def __str__(self) -> str:
         return f"MemoryArea(memory={self.__memory}, base_address={self.__base_address:#x}, size={self.__size})"
 
@@ -166,6 +175,21 @@ class Memory:
         """
         if not Kernel32.VirtualFreeEx(self.__process.handle.native, address, size, free_type):
             raise WinAPIException
+
+    def protect(self, address: int, size: int, protection: MemoryProtection) -> MemoryProtection:
+        """
+        Change the protection of some allocated memory.
+        :param address: the memory address
+        :param size: the memory size
+        :param protection: the new protection
+        :return: the old protection
+        """
+        old_protection = DWORD()
+        if not Kernel32.VirtualProtectEx(self.__process.handle.native, address, size, protection,
+                                         ctypes.pointer(old_protection)):
+            raise WinAPIException
+
+        return MemoryProtection(old_protection.value)
 
     def __str__(self) -> str:
         return f"Memory(process={self.__process})"

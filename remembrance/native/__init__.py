@@ -226,6 +226,18 @@ Kernel32.GetThreadContext.restype = BOOL
 Kernel32.SetThreadContext.argtypes = [HANDLE, LPCONTEXT64]
 Kernel32.SetThreadContext.restype = BOOL
 
+"""
+    BOOL VirtualProtectEx(
+        HANDLE hProcess,
+        LPVOID lpAddress,
+        SIZE_T dwSize,
+        DWORD  flNewProtect,
+        PDWORD lpflOldProtect
+    );
+"""
+Kernel32.VirtualProtectEx.argtypes = [HANDLE, LPVOID, SIZE_T, DWORD, PDWORD]
+Kernel32.VirtualProtectEx.restype = BOOL
+
 #######################################################################################
 # NTDLL Stuff
 
