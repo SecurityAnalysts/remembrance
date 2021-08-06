@@ -4,6 +4,9 @@ from ctypes.wintypes import *
 from remembrance.native.structure import LPCONTEXT64, LPPROCESSENTRY32A, LPTHREADENTRY32
 from remembrance.native.types import FARPROC, NTSTATUS, PSIZE_T, PVOID, SIZE_T
 
+#######################################################################################
+# Kernel32 Stuff
+
 Kernel32 = ctypes.windll.Kernel32
 
 """
