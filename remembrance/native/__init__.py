@@ -1,7 +1,7 @@
 import ctypes
 from ctypes.wintypes import *
 
-from remembrance.native.structure import LPPROCESSENTRY32A, LPTHREADENTRY32
+from remembrance.native.structure import LPCONTEXT64, LPPROCESSENTRY32A, LPTHREADENTRY32
 from remembrance.native.types import FARPROC, NTSTATUS, PSIZE_T, PVOID, SIZE_T
 
 Kernel32 = ctypes.windll.Kernel32
@@ -207,6 +207,24 @@ Kernel32.CreateRemoteThread.restype = HANDLE
 """
 Kernel32.GetProcAddress.argtypes = [HMODULE, LPCSTR]
 Kernel32.GetProcAddress.restype = FARPROC
+
+"""
+    BOOL GetThreadContext(
+        HANDLE    hThread,
+        LPCONTEXT lpContext
+    );
+"""
+Kernel32.GetThreadContext.argtypes = [HANDLE, LPCONTEXT64]
+Kernel32.GetThreadContext.restype = BOOL
+
+"""
+    BOOL SetThreadContext(
+        HANDLE        hThread,
+        const CONTEXT *lpContext
+    );
+"""
+Kernel32.SetThreadContext.argtypes = [HANDLE, LPCONTEXT64]
+Kernel32.SetThreadContext.restype = BOOL
 
 #######################################################################################
 # NTDLL Stuff

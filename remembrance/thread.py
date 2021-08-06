@@ -8,9 +8,9 @@ from remembrance.exception import ThreadException
 from remembrance.handle import Handle
 from remembrance.native import Kernel32, NTDLL, PVOID
 from remembrance.native.constants import THREAD_PRIORITY_ERROR_RETURN
-from remembrance.native.enum import SnapshotFlags, ThreadInfoClass
+from remembrance.native.enum import SnapshotFlags, ThreadContextFlags, ThreadInfoClass
 from remembrance.native.exception import NTSTATUS_SUCCESS, NTSTATUSException, WinAPIException
-from remembrance.native.structure import THREADENTRY32
+from remembrance.native.structure import CONTEXT64, THREADENTRY32
 
 
 class ThreadAccessRights(enum.IntEnum):
@@ -181,6 +181,29 @@ class Thread:
         :param exit_code: the thread exit code
         """
         Kernel32.TerminateThread(self.__handle.native, exit_code)
+
+    def hijack(self, new_address: int):
+        """
+        Hijack the thread and start to execute the code at the new address.
+        NOTE: If THREAD_ALL_ACCESS is used, it will throw error, for some reason.
+        :param new_address: the new code address
+        """
+        self.suspend()
+
+        context = CONTEXT64()
+        context.ContextFlags = ThreadContextFlags.CONTEXT_FULL
+
+        if not Kernel32.GetThreadContext(self.__handle.native, ctypes.pointer(context)):
+            self.resume()
+            raise WinAPIException
+
+        context.Rip = new_address
+
+        if not Kernel32.SetThreadContext(self.__handle.native, ctypes.pointer(context)):
+            self.resume()
+            raise WinAPIException
+
+        self.resume()
 
     def __str__(self) -> str:
         return f"Thread(tid={self.__tid}, handle={self.__handle})"

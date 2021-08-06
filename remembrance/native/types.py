@@ -3,6 +3,7 @@ from ctypes.wintypes import *
 
 PVOID = ctypes.c_void_p
 ULONG64 = ctypes.c_ulonglong
+DWORD64 = ULONG64
 
 if ctypes.sizeof(ctypes.c_void_p) == 8:
     ULONG_PTR = ULONG64
