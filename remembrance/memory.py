@@ -103,7 +103,7 @@ class Memory:
 
     # noinspection PyUnresolvedReferences
     @property
-    def parent(self) -> "Process":
+    def process(self) -> "Process":
         return self.__process
 
     # noinspection PyUnresolvedReferences

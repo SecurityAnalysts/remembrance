@@ -6,6 +6,8 @@ from typing import List, Type
 
 from .exception import ProcessException, ProcessNotFoundException
 from .handle import Handle
+from .injection.dll import DLLInjectionMethod
+from .injection.shellcode import ShellcodeInjectionMethod
 from .native import Kernel32, NTDLL
 from .native.enum import SnapshotFlags
 from .native.exception import NTSTATUS_SUCCESS, NTSTATUSException, WinAPIException
@@ -169,21 +171,21 @@ class Process:
 
         return Thread(thread_id.value, thread_handle)
 
-    def inject_shellcode(self, method: Type["ShellcodeInjectionMethod"], *args, **kwargs):
+    def inject_dll(self, method: Type[DLLInjectionMethod], *args, **kwargs):
         """
-        Inject a shellcode into the process.
-        NOTE: For the parameters, check the used method documentation.
-        :param method: the injection method
+        Inject a DLL into the process.
+        NOTE: For more parameters, check out the chosen method documentation.
+        :param method: the method to use
         """
         return method(self).execute(*args, **kwargs)
 
-    def inject_dll(self, method: Type["DLLInjectionMethod"], *args, **kwargs):
+    def inject_shellcode(self, method: Type[ShellcodeInjectionMethod], *args, **kwags):
         """
-        Inject a DLL into the process.
-        NOTE: For the parameters, check the used method documentation.
-        :param method: the injection method
+        Inject a shellcode into the process.
+        NOTE: For more parameters, check out the chosen method documentation.
+        :param method: the method to use
         """
-        return method(self).execute(*args, **kwargs)
+        return method(self).execute(*args, **kwags)
 
     def __str__(self) -> str:
         return f"Process(pid={self.__pid}, handle={self.__handle})"

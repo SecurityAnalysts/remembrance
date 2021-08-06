@@ -1,17 +1,13 @@
 from abc import ABC, abstractmethod
-from typing import Tuple
 
-from ..memory import Memory, MemoryProtection
-from ..thread import Thread
+from remembrance.memory import Memory, MemoryProtection
 
 
-# noinspection PyUnresolvedReferences
 class ShellcodeInjectionMethod(ABC):
-    _process: "Process"
     _memory: Memory
 
+    # noinspection PyUnresolvedReferences
     def __init__(self, process: "Process"):
-        self._process = process
         self._memory = Memory(process)
 
     @abstractmethod
@@ -20,16 +16,15 @@ class ShellcodeInjectionMethod(ABC):
 
 
 class ShellcodeCreateRemoteThreadMethod(ShellcodeInjectionMethod):
-    # noinspection PyUnresolvedReferences
-    def execute(self, shellcode: bytes) -> Tuple["MemoryArea", Thread]:
+    def execute(self, shellcode: bytes):
         """
-        Inject the shellcode and execute it using CreateRemoteThread.
+        Load the shellcode using CreateRemoteThread.
         :param shellcode: the shellcode to inject
         :return: the shellcode memory area and the shellcode thread
         """
-        area = self._memory.allocate_area(len(shellcode), MemoryProtection.PAGE_EXECUTE_READWRITE)
-        area.write(shellcode)
+        shellcode_area = self._memory.allocate_area(len(shellcode), MemoryProtection.PAGE_EXECUTE_READWRITE)
+        shellcode_area.write(shellcode)
 
-        thread = self._process.create_thread(area.base_address)
+        thread = self._memory.process.create_thread(shellcode_area.base_address)
 
-        return area, thread
+        return shellcode_area, thread
