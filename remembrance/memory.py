@@ -2,8 +2,10 @@ import ctypes
 import enum
 from ctypes.wintypes import DWORD
 
-from remembrance.native import Kernel32
-from remembrance.native.exception import WinAPIException
+from .native import Kernel32
+from .native.exception import WinAPIException
+from .native.structure import MEMORY_BASIC_INFORMATION
+from .pattern import Pattern
 
 
 class MemoryAllocationType(enum.IntEnum):
@@ -190,6 +192,35 @@ class Memory:
             raise WinAPIException
 
         return MemoryProtection(old_protection.value)
+
+    def scan(self, pattern: Pattern, address: int, size: int) -> int:
+        memory_info = MEMORY_BASIC_INFORMATION()
+
+        if not Kernel32.VirtualQueryEx(self.process.handle.native, address, ctypes.pointer(memory_info),
+                                       ctypes.sizeof(MEMORY_BASIC_INFORMATION)):
+            raise WinAPIException
+
+        current = address
+        while current < address + size:
+            if not Kernel32.VirtualQueryEx(self.process.handle.native, current,
+                                           ctypes.pointer(memory_info), ctypes.sizeof(MEMORY_BASIC_INFORMATION)):
+                continue
+
+            if memory_info.State != MemoryAllocationType.MEM_COMMIT or (memory_info.Protect ==
+                                                                        MemoryProtection.PAGE_NOACCESS):
+                continue
+
+            old_protection = self.protect(memory_info.BaseAddress, memory_info.RegionSize,
+                                          MemoryProtection.PAGE_EXECUTE_READWRITE)
+
+            buffer = self.read(memory_info.BaseAddress, memory_info.RegionSize)
+            self.protect(memory_info.BaseAddress, memory_info.RegionSize, old_protection)
+
+            offset = pattern.match(buffer)
+            if offset is not None:
+                return offset
+
+            current += memory_info.RegionSize
 
     def __str__(self) -> str:
         return f"Memory(process={self.__process})"

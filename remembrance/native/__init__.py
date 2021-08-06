@@ -1,7 +1,8 @@
 import ctypes
 from ctypes.wintypes import *
 
-from remembrance.native.structure import LPCONTEXT64, LPPROCESSENTRY32A, LPTHREADENTRY32
+from remembrance.native.structure import LPCONTEXT64, LPMODULEENTRY32A, LPPROCESSENTRY32A, LPTHREADENTRY32, \
+    PMEMORY_BASIC_INFORMATION
 from remembrance.native.types import FARPROC, NTSTATUS, PSIZE_T, PVOID, SIZE_T
 
 #######################################################################################
@@ -240,6 +241,45 @@ Kernel32.SetThreadContext.restype = BOOL
 """
 Kernel32.VirtualProtectEx.argtypes = [HANDLE, LPVOID, SIZE_T, DWORD, PDWORD]
 Kernel32.VirtualProtectEx.restype = BOOL
+
+"""
+    SIZE_T VirtualQueryEx(
+        HANDLE                    hProcess,
+        LPCVOID                   lpAddress,
+        PMEMORY_BASIC_INFORMATION lpBuffer,
+        SIZE_T                    dwLength
+    );
+"""
+Kernel32.VirtualQueryEx.argtypes = [HANDLE, LPCVOID, PMEMORY_BASIC_INFORMATION, SIZE_T]
+Kernel32.VirtualQueryEx.restype = SIZE_T
+
+"""
+    BOOL Module32First(
+        HANDLE          hSnapshot,
+        LPMODULEENTRY32 lpme
+    );
+"""
+Kernel32.Module32First.argtypes = [HANDLE, LPMODULEENTRY32A]
+Kernel32.Module32First.restype = BOOL
+
+"""
+    BOOL Module32Next(
+        HANDLE          hSnapshot,
+        LPMODULEENTRY32 lpme
+    );
+"""
+Kernel32.Module32Next.argtypes = [HANDLE, LPMODULEENTRY32A]
+Kernel32.Module32Next.restype = BOOL
+
+"""
+    DWORD WaitForSingleObjectEx(
+        HANDLE hHandle,
+        DWORD  dwMilliseconds,
+        BOOL   bAlertable
+    );
+"""
+Kernel32.WaitForSingleObjectEx.argtypes = [HANDLE, DWORD, BOOL]
+Kernel32.WaitForSingleObjectEx.restype = DWORD
 
 #######################################################################################
 # NTDLL Stuff

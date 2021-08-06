@@ -1,7 +1,8 @@
 import ctypes
 from ctypes.wintypes import *
 
-from remembrance.native.types import DWORD64, ULONG_PTR
+from remembrance.native.constants import MAX_MODULE_NAME32
+from remembrance.native.types import DWORD64, PVOID, SIZE_T, ULONG_PTR
 
 
 class PROCESSENTRY32A(ctypes.Structure):
@@ -133,3 +134,33 @@ class CONTEXT64(ctypes.Structure):
 
 
 LPCONTEXT64 = ctypes.POINTER(CONTEXT64)
+
+
+class MEMORY_BASIC_INFORMATION(ctypes.Structure):
+    _fields_ = [('BaseAddress', PVOID),
+                ('AllocationBase', PVOID),
+                ('AllocationProtect', DWORD),
+                ('PartitionId', WORD),
+                ('RegionSize', SIZE_T),
+                ('State', DWORD),
+                ('Protect', DWORD),
+                ('Type', DWORD)]
+
+
+PMEMORY_BASIC_INFORMATION = ctypes.POINTER(MEMORY_BASIC_INFORMATION)
+
+
+class MODULEENTRY32A(ctypes.Structure):
+    _fields_ = [('dwSize', DWORD),
+                ('th32ModuleID', DWORD),
+                ('th32ProcessID', DWORD),
+                ('GlblcntUsage', DWORD),
+                ('ProccntUsage', DWORD),
+                ('modBaseAddr', PBYTE),
+                ('modBaseSize', DWORD),
+                ('hModule', HANDLE),
+                ('szModule', CHAR * (MAX_MODULE_NAME32 + 1)),
+                ('szExePath', CHAR * MAX_PATH)]
+
+
+LPMODULEENTRY32A = ctypes.POINTER(MODULEENTRY32A)

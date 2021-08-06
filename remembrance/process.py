@@ -169,7 +169,7 @@ class Process:
         if thread_handle is None:
             raise WinAPIException
 
-        return Thread(thread_id.value, thread_handle)
+        return Thread(thread_id.value, Handle(thread_handle))
 
     def inject_dll(self, method: Type[DLLInjectionMethod], *args, **kwargs):
         """

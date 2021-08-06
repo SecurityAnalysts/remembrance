@@ -12,3 +12,11 @@ class ProcessNotFoundException(ProcessException):
 
 class ThreadException(Exception):
     ...
+
+
+class ModuleException(Exception):
+    ...
+
+
+class ModuleNotFoundException(ModuleException):
+    ...

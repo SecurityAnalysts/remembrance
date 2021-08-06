@@ -4,13 +4,13 @@ from _winapi import INVALID_HANDLE_VALUE
 from ctypes.wintypes import ULONG
 from typing import List
 
-from remembrance.exception import ThreadException
-from remembrance.handle import Handle
-from remembrance.native import Kernel32, NTDLL, PVOID
-from remembrance.native.constants import THREAD_PRIORITY_ERROR_RETURN
-from remembrance.native.enum import SnapshotFlags, ThreadContextFlags, ThreadInfoClass
-from remembrance.native.exception import NTSTATUS_SUCCESS, NTSTATUSException, WinAPIException
-from remembrance.native.structure import CONTEXT64, THREADENTRY32
+from .exception import ThreadException
+from .handle import Handle
+from .native import Kernel32, NTDLL, PVOID
+from .native.constants import THREAD_PRIORITY_ERROR_RETURN
+from .native.enum import SnapshotFlags, ThreadContextFlags, ThreadInfoClass
+from .native.exception import NTSTATUS_SUCCESS, NTSTATUSException, WinAPIException
+from .native.structure import CONTEXT64, THREADENTRY32
 
 
 class ThreadAccessRights(enum.IntEnum):
@@ -182,10 +182,19 @@ class Thread:
         """
         Kernel32.TerminateThread(self.__handle.native, exit_code)
 
+    def wait(self, wait_time: int = -1):
+        """
+        Wait for the thread execution.
+        :param wait_time: the wait time
+        :return:
+        """
+        Kernel32.WaitForSingleObjectEx(self.__handle.native, wait_time, True)
+
     def hijack(self, new_address: int):
         """
         Hijack the thread and start to execute the code at the new address.
         NOTE: If THREAD_ALL_ACCESS is used, it will throw error, for some reason.
+        NOTE: It only works on x64 threads.
         :param new_address: the new code address
         """
         self.suspend()
