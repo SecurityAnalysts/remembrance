@@ -156,7 +156,7 @@ class Process:
     def create_thread(self, start_address: int, param: int = None, stack_size: int = 0,
                       creation_flags: int = 0) -> Thread:
         """
-        Create a thread runniong at the provided start address.
+        Create a thread running at the provided start address.
         :param start_address: the address to the code to run
         :param param: the parameter to the thread
         :param stack_size: the thread stack size
