@@ -32,7 +32,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/Zeta314/remembrance">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <img src="images/logo.png" alt="Logo" width="720" height="480">
   </a>
 
   <h3 align="center">Remembrance</h3>
