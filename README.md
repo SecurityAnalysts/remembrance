@@ -92,6 +92,7 @@ It's made to help people develop trainers, exploits and what more with much ease
 
 * [Python 3.9](https://www.python.org/)
 * [Poetry](https://python-poetry.org/)
+* [PyCharm](https://www.jetbrains.com/pycharm/)
 
 
 
